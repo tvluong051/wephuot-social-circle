@@ -1,6 +1,8 @@
 package com.lightdevel.wephuot.socialcircle.services;
 
 
+import com.lightdevel.wephuot.socialcircle.clients.Provider;
+import com.lightdevel.wephuot.socialcircle.clients.ProviderFactory;
 import com.lightdevel.wephuot.socialcircle.exceptions.BusinessException;
 import com.lightdevel.wephuot.socialcircle.models.entities.nodes.Person;
 import com.lightdevel.wephuot.socialcircle.models.entities.nodes.SocialProfile;
@@ -21,11 +23,15 @@ public class PersonServiceImpl implements PersonService {
 
     private PersonRepository personRepository;
     private SocialProfileRepository profileRepository;
+    private ProviderFactory providerFactory;
 
     @Autowired
-    public PersonServiceImpl(SocialProfileRepository profileRepository, PersonRepository personRepository) {
+    public PersonServiceImpl(SocialProfileRepository profileRepository,
+                             PersonRepository personRepository,
+                             ProviderFactory providerFactory) {
         this.profileRepository = Objects.requireNonNull(profileRepository);
         this.personRepository = Objects.requireNonNull(personRepository);
+        this.providerFactory = Objects.requireNonNull(providerFactory);
     }
 
     @Override
@@ -133,5 +139,21 @@ public class PersonServiceImpl implements PersonService {
                         .build()
                 )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PersonOut getPersonFromToken(String token, String tokenProvider) {
+        Provider provider = providerFactory.getProvider(tokenProvider);
+        if (provider == null) {
+            return null;
+        }
+        String providedId = provider.getProvidedIdFromToken(token);
+        if(providedId == null) {
+            return null;
+        }
+        Person person = this.personRepository.findByProfilesProviderAndProfilesProvidedId(tokenProvider, providedId);
+        return PersonOut.builder()
+                .userId(person.getId())
+                .build();
     }
 }

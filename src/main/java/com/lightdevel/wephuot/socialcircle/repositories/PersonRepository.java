@@ -9,12 +9,14 @@ import java.util.List;
 
 public interface PersonRepository extends Neo4jRepository<Person, String> {
 
-    @Query("MATCH (p:Person {id: {personId}}) -[r:TRAVELED_WITH]- (buddy:Person)" +
+    @Query("MATCH (p:Person {id: {personId}}) -[r:TRAVELED_WITH]- (buddy:Person) " +
             "RETURN buddy " +
             "ORDER BY r.weight " +
             "LIMIT {limit}")
     List<Person> findTopFriends(@Param("personId") String personId, @Param("limit") Integer limit);
 
     List<Person> findByEmailMatchesRegex(String emailRegex);
+
+    Person findByProfilesProviderAndProfilesProvidedId(String provider, String providedId);
 
 }

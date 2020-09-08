@@ -30,5 +30,8 @@ public class Person {
     @Relationship(type = "TRAVELED_WITH", direction = Relationship.UNDIRECTED)
     private List<TripBuddy> buddies;
 
+    @Relationship(type = "HAS_TOKEN")
+    private Token accessToken;
+
 
 }

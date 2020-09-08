@@ -7,13 +7,10 @@ import lombok.Data;
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class PersonOut {
+public class TokenOut {
     private String userId;
 
-    private String profilePic;
+    private String accessToken;
 
-    private String displayName;
-
-    private String email;
-
+    private Long expiresTokenTs;
 }

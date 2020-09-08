@@ -15,6 +15,4 @@ public interface PersonService {
     PersonOut getPersonDetail(String personId);
 
     List<PersonOut> searchPerson(String searchTerm);
-
-    PersonOut getPersonFromToken(String token, String tokenProvider);
 }

@@ -41,13 +41,6 @@ public class PersonController {
         return new SearchResult<>(results.size(), results);
     }
 
-    @GetMapping("/person")
-    public PersonOut getPersonFromToken(@RequestParam("token") String token,
-                                        @RequestParam("tokenProvider") String tokenProvider) {
-        LOGGER.info("GET - retrieve details of person from token of provider", tokenProvider);
-        return this.personService.getPersonFromToken(token, tokenProvider);
-    }
-
     @GetMapping("/person/{personId}")
     public PersonOut getPersonDetail(@PathVariable("personId") String personId) {
         LOGGER.info("GET - retrieve details of person id = {}", personId);

@@ -39,7 +39,7 @@ public class FacebookClient implements Provider {
 	@Value("${identity-providers.facebook.client-secret}")
 	private String clientSecret;
 
-	private static final String DEBUG_TOKEN_PATH = "/v6.0/debug_token";
+	private static final String DEBUG_TOKEN_PATH = "/debug_token";
 
 	private RestTemplate restTemplate;
 

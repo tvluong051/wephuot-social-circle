@@ -6,32 +6,35 @@ import com.lightdevel.wephuot.socialcircle.clients.ProviderFactory;
 import com.lightdevel.wephuot.socialcircle.exceptions.BusinessException;
 import com.lightdevel.wephuot.socialcircle.models.entities.nodes.Person;
 import com.lightdevel.wephuot.socialcircle.models.entities.nodes.SocialProfile;
+import com.lightdevel.wephuot.socialcircle.models.entities.nodes.Token;
 import com.lightdevel.wephuot.socialcircle.models.in.SocialProfileIn;
 import com.lightdevel.wephuot.socialcircle.models.out.PersonOut;
 import com.lightdevel.wephuot.socialcircle.repositories.PersonRepository;
 import com.lightdevel.wephuot.socialcircle.repositories.SocialProfileRepository;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class PersonServiceImpl implements PersonService {
 
-    private PersonRepository personRepository;
-    private SocialProfileRepository profileRepository;
-    private ProviderFactory providerFactory;
+    private final PersonRepository personRepository;
+    private final SocialProfileRepository profileRepository;
 
     @Autowired
     public PersonServiceImpl(SocialProfileRepository profileRepository,
-                             PersonRepository personRepository,
-                             ProviderFactory providerFactory) {
+                             PersonRepository personRepository) {
         this.profileRepository = Objects.requireNonNull(profileRepository);
         this.personRepository = Objects.requireNonNull(personRepository);
-        this.providerFactory = Objects.requireNonNull(providerFactory);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class PersonServiceImpl implements PersonService {
     public PersonOut saveProfile(SocialProfileIn profile) {
         SocialProfile updatedProfile;
         Person updatedPerson;
-        List<SocialProfile> existingProfiles =this.profileRepository.findByProviderAndProvidedId(profile.getProvider(), profile.getProvidedId());
+        List<SocialProfile> existingProfiles = this.profileRepository.findByProviderAndProvidedId(profile.getProvider(), profile.getProvidedId());
         if(CollectionUtils.isEmpty(existingProfiles)) {
             updatedPerson = new Person();
             updatedPerson.setId(UUID.randomUUID().toString());
@@ -139,21 +142,5 @@ public class PersonServiceImpl implements PersonService {
                         .build()
                 )
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public PersonOut getPersonFromToken(String token, String tokenProvider) {
-        Provider provider = providerFactory.getProvider(tokenProvider);
-        if (provider == null) {
-            return null;
-        }
-        String providedId = provider.getProvidedIdFromToken(token);
-        if(providedId == null) {
-            return null;
-        }
-        Person person = this.personRepository.findByProfilesProviderAndProfilesProvidedId(tokenProvider, providedId);
-        return PersonOut.builder()
-                .userId(person.getId())
-                .build();
     }
 }

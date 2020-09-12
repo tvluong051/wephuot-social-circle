@@ -27,7 +27,7 @@ public class PersonController {
         this.personService = Objects.requireNonNull(personService);
     }
 
-    @GetMapping("/person")
+    @GetMapping("")
     public List<PersonOut> findPersonWithExternalProfile(@RequestParam("provider") String provider,
                                                     @RequestParam("providedId") String providedId) {
         LOGGER.info("GET - find user given provider = {} and providedId = {}", provider, providedId);
@@ -57,6 +57,7 @@ public class PersonController {
 
     @PostMapping("/person")
     public PersonOut saveExternalProfile(@RequestBody SocialProfileIn profile) {
+        LOGGER.info("POST - save external profile from provider = {} and providedId = {}", profile.getProvider(), profile.getProvidedId());
         return this.personService.saveProfile(profile);
     }
 

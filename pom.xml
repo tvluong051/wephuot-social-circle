@@ -99,6 +99,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>social-circle-${project.version}</finalName>
     </build>
 
 </project>

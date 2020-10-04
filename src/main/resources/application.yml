@@ -18,7 +18,7 @@ logging:
   file:
     name: ${LOG_PATH}/social_circle.log
   level:
-    root: WARN
+    root: INFO
     org:
       springframework:
         web: INFO

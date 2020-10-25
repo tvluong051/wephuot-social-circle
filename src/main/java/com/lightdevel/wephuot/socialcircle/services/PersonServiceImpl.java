@@ -130,8 +130,13 @@ public class PersonServiceImpl implements PersonService {
         String searchTermRegex = "(?i).*" + searchTerm + ".*";
         List<SocialProfile> profilesByName = this.profileRepository.findByDisplayNameMatchesRegex(searchTermRegex);
         Set<Person> persons = profilesByName.stream().map(SocialProfile::getIdentity).collect(Collectors.toSet());
+        Set<String> foundPersons = persons.stream().map(Person::getId).collect(Collectors.toSet());
         if(persons.size() < 10) {
-            persons.addAll(this.personRepository.findByEmailMatchesRegex(searchTermRegex));
+            List<Person> foundByEmail = this.personRepository.findByEmailMatchesRegex(searchTermRegex);
+            List<Person> filtered = foundByEmail.stream()
+                    .filter(p -> !foundPersons.contains(p.getId()))
+                    .collect(Collectors.toList());
+            persons.addAll(filtered.subList(0, 10 - persons.size() < filtered.size() ? 10 - persons.size() : filtered.size()));
         }
         return persons.stream()
                 .map(person -> PersonOut.builder()
